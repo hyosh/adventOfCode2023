@@ -189,21 +189,32 @@ function part2(array $lines): int
     $map = $parsed_lines;
     $new_stones = [];
     $cache = [];
-    for ($i = 0; $i < 1000000000; $i++) {
+
+    $iterations = 0;
+    // build cache loop
+    while(true){
         $map_string = json_encode($map);
-        if (array_key_exists($map_string, $cache)) {
-            $result = $cache[$map_string];
-            $map = $result['map'];
-        }else{
+        if (array_key_exists($map_string, $cache)){
+            break;
+        }
+        $result = cycle($map);
+        $map = $result['map'];
+        $cache[$map_string] = $result;
+        $iterations++;
+    };
+    while ((1000000000 - $iterations) % count($cache) !== 0){
+        $map_string = json_encode($map);
+
+        if(array_key_exists($map_string, $cache)){
+            $map = $cache[$map_string]['map'];
+            $new_stones = $cache[$map_string]['new_stones'];
+        } else {
             $result = cycle($map);
             $map = $result['map'];
-            $cache[$map_string] = $result;
+            $new_stones = $result['new_stones'];
         }
-
-        $new_stones = $result['new_stones'];
+        $iterations++;
     }
-
-    printMap($map);
 
     return array_sum($new_stones);
 }
