@@ -14,19 +14,6 @@ function display(string $result): void
     echo $result . PHP_EOL;
 }
 
-function parseLines(array $lines): array
-{
-    $parsed_lines = [];
-    foreach ($lines as $line) {
-        if ($line === '') {
-            continue;
-        }
-        $parsed_lines[] = str_split($line);
-    }
-
-    return $parsed_lines;
-}
-
 function printMap($map): void
 {
     foreach ($map as $line) {
@@ -34,72 +21,7 @@ function printMap($map): void
     }
 }
 
-
-################################
-########### PART 1 #############
-################################
-$cached_maps = [];
-function rollStones(array $map): array
-{
-    $copy_map = $map;
-
-    foreach ($copy_map as $row => $row_value) {
-        foreach ($row_value as $col => $col_value) {
-            if ($col_value === 'O') {
-                $copy_map[$row][$col] = '.';
-            }
-        }
-    }
-    $new_stones = [];
-    for ($col = 0; $col < count($map); $col++) {
-        $stones_to_roll = [];
-        for ($row = count($map[0]) - 1; $row >= 0; $row--) {
-            $char = $map[$row][$col];
-            if ($char === 'O') {
-                $stones_to_roll[] = count($map) - $row;
-            } elseif ($char === '#') {
-                $new_stones = array_merge($new_stones, $stones_to_roll);
-                foreach ($stones_to_roll as $stone) {
-                    $copy_map[count($map) - $stone][$col] = 'O';
-                }
-                $stones_to_roll = [];
-            } elseif ($char === '.') {
-                $stones_to_roll = array_map(function ($stone) {
-                    return $stone + 1;
-                }, $stones_to_roll);
-            }
-        }
-        foreach ($stones_to_roll as $stone) {
-            $copy_map[count($map) - $stone][$col] = 'O';
-        }
-        $new_stones = array_merge($new_stones, $stones_to_roll);
-    }
-
-    $result = 0;
-    foreach ($copy_map as $row => $row_value) {
-        $stone_value = count($row_value) - $row;
-        $nb_stones = count(array_filter($row_value, function ($char) {
-            return $char === 'O';
-        }));
-        $result += $stone_value * $nb_stones;
-    }
-
-    return [
-        'map' => $copy_map,
-        'result' => $result,
-    ];
-}
-
-function part1(array $lines): int
-{
-    $parsed_lines = parseLines($lines);
-    return rollStones($parsed_lines)['result'];
-}
-
-################################
-########### PART 2 #############
-################################
-function parseLinesV2(array $lines): array
+function parseLines(array $lines): array
 {
     $parsed_lines = [];
     foreach ($lines as $line) {
@@ -177,6 +99,25 @@ function getResult(array $map): int
     return $result;
 }
 
+
+################################
+########### PART 1 #############
+################################
+function part1(array $lines): int
+{
+    $map = parseLines($lines);
+    $map = moove($map);
+    // get back to normal position
+    for ($i = 0; $i < 3; $i++) {
+        $map = rotate($map);
+        $map = reverse($map);
+    }
+    return getResult($map);
+}
+
+################################
+########### PART 2 #############
+################################
 function cycle(array $map): array
 {
     for ($i = 0; $i < 4; $i++) {
@@ -187,7 +128,7 @@ function cycle(array $map): array
 }
 function part2(array $lines): int
 {
-    $parsed_lines = parseLinesV2($lines);
+    $parsed_lines = parseLines($lines);
     $map = $parsed_lines;
 
     $map_string = json_encode($map);
