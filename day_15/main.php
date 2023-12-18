@@ -55,7 +55,6 @@ function part2(array $lines): int
     $focals = [];
 
     foreach ($lines as $hash) {
-        $sign = null;
         if (strpos($hash, '-') !== false) {
             $hash = explode('-', $hash);
             $box_number = getValue($hash[0]);
