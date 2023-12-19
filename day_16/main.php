@@ -78,19 +78,6 @@ function addVectors(array $vector1, array $vector2): array
     return [$x, $y];
 }
 
-function mergeEnegizedMap(array $energizedMap, array $new_energizedMap): array
-{
-    foreach ($new_energizedMap as $r => $row) {
-        foreach ($row as $c => $char) {
-            if ($char === '#') {
-                $energizedMap[$r][$c] = '#';
-            }
-        }
-    }
-
-    return $energizedMap;
-}
-
 $loop = [];
 $energized = [];
 function navigate(array $map, array $position, array $vector, int $energizedCount = 0): array
