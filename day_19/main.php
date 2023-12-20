@@ -153,33 +153,32 @@ function getNbAcceptedPossibilites(array $rules, string $rule_name, array $possi
 
             $ranges = $possibilities[$letter];
             if ($sign === '<') {
-                $tmp_range_min = [
+                $tmp_pass_values = [
                     $ranges[0],
                     min($ranges[1], $value - 1),
                 ];
-                $tmp_range_max = [
+                $tmp_failed_values = [
                     max($ranges[0], $value),
                     $ranges[1],
                 ];
-            }
-            else{
-                $tmp_range_min = [
-                   max($value + 1, $ranges[0]),
+            } elseif($sign === '>') {
+                $tmp_pass_values = [
+                    max($value + 1, $ranges[0]),
                     $ranges[1],
                 ];
-                $tmp_range_max = [
+                $tmp_failed_values = [
                     $ranges[0],
                     min($ranges[1], $value),
                 ];
             }
 
-            if($tmp_range_min[0] <= $tmp_range_min[1]) {
-               $possibilities_clone = [...$possibilities];
-                $possibilities_clone[$letter] = $tmp_range_min;
+            if ($tmp_pass_values[0] <= $tmp_pass_values[1]) {
+                $possibilities_clone = [...$possibilities];
+                $possibilities_clone[$letter] = $tmp_pass_values;
                 $total += getNbAcceptedPossibilites($rules, $next_rule, $possibilities_clone);
             }
-            if($tmp_range_max[0] <= $tmp_range_max[1]) {
-                $possibilities[$letter] = $tmp_range_max;
+            if ($tmp_failed_values[0] <= $tmp_failed_values[1]) {
+                $possibilities[$letter] = $tmp_failed_values;
             }
         } else {
             // default value
