@@ -158,7 +158,6 @@ function part1(array $lines): int
 function part2(array $lines): int
 {
     $configuration = parseLines($lines);
-    $nb_iterations = INF;
     $nb_cycles = 0;
 
     $rx_module_calling = null;
